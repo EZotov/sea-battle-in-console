@@ -1,4 +1,5 @@
 import {Coordinates, ShotResult} from '../types';
+import {toKey} from './utils';
 
 export class Enemy {
     private readonly fieldSize: number;
@@ -41,7 +42,7 @@ export class Enemy {
 
     // Принимает результат выстрела от GameEngine и обновляет стратегию
     registerShotResult(coords: Coordinates, result: ShotResult): void {
-        this.shotHistory.add(this.toKey(coords));
+        this.shotHistory.add(toKey(coords));
 
         if (result === 'hit') {
             this.currentHits.push(coords);
@@ -52,13 +53,6 @@ export class Enemy {
             this.currentHits = [];
             this.targetQueue = [];
         }
-    }
-
-    // Сброс памяти бота (пригодится для рестарта партии)
-    reset(): void {
-        this.shotHistory.clear();
-        this.targetQueue = [];
-        this.currentHits = [];
     }
 
     updateTargetQueue(): void {
@@ -100,22 +94,25 @@ export class Enemy {
                     const neighbor = {row: hit.row + dr, col: hit.col + dc};
 
                     if (this.isInside(neighbor)) {
-                        this.shotHistory.add(this.toKey(neighbor));
+                        this.shotHistory.add(toKey(neighbor));
                     }
                 }
             }
         }
     }
 
+    // Сброс памяти бота (пригодится для рестарта партии)
+    reset(): void {
+        this.shotHistory.clear();
+        this.targetQueue = [];
+        this.currentHits = [];
+    }
+
     private isValidTarget(coords: Coordinates): boolean {
-        return this.isInside(coords) && !this.shotHistory.has(this.toKey(coords));
+        return this.isInside(coords) && !this.shotHistory.has(toKey(coords));
     }
 
     private isInside({row, col}: Coordinates): boolean {
         return row >= 0 && row < this.fieldSize && col >= 0 && col < this.fieldSize;
-    }
-
-    private toKey({row, col}: Coordinates): string {
-        return `${row},${col}`;
     }
 }
