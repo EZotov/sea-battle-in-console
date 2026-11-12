@@ -1,0 +1,72 @@
+import eslint from '@eslint/js';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import eslintConfigPrettier from "eslint-config-prettier";
+
+export default [
+    {
+        ignores: ['eslint.config.js', 'deploy'],
+    },
+    eslint.configs.recommended,
+    ...tseslint.configs.recommendedTypeChecked,
+    eslintPluginPrettierRecommended,
+    {
+      plugins: {
+        "simple-import-sort": simpleImportSort,
+      },
+        languageOptions: {
+            globals: {
+                ...globals.node,
+                ...globals.jest,
+            },
+            sourceType: 'commonjs',
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+    },
+    {
+        rules: {
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-floating-promises': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
+            '@typescript-eslint/no-unsafe-call': 'off',
+            '@typescript-eslint/no-unsafe-member-access': "off",
+            'prettier/prettier': ['error', { endOfLine: 'auto' }],
+            'object-curly-newline': [
+                'error',
+                {
+                    "ObjectExpression": { "multiline": true, "minProperties": 2, "consistent": true },
+                    "ObjectPattern": { "multiline": true, "minProperties": 2, "consistent": true },
+                    "ImportDeclaration": { "multiline": true, "consistent": true } 
+                },
+            ],
+            'object-property-newline': [
+                'error',
+                {
+                    allowAllPropertiesOnSameLine: false,
+                },
+            ],
+            "simple-import-sort/imports": [
+            "error",
+                {
+                    "groups": [
+                       // 1. Внешние пакеты и библиотеки (NPM-модули)
+                        ["^@?\\w"],
+                        // 2. Кастомные алиасы и внутренние модули (например, @shared, @modules, ~/components)
+                        ["^@(consts|dto|interfaces|utils|decorators|guards)(/|$)", "^~/", "^src/", ],
+                        // 3. Локальные (относительные) импорты (./ и ../)
+                        ["^\\."],
+                    ]
+                }
+            ],
+            "simple-import-sort/exports": "error",
+        },
+    },
+    eslintConfigPrettier
+];
