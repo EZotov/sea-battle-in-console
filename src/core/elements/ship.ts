@@ -2,16 +2,16 @@ import {SHIP_NAMES} from '../../consts';
 import type {Coordinates} from '../../types';
 
 export class Ship {
+    public readonly name: string;
+    private readonly size: number;
+    readonly cells: Coordinates[];
+    private hits: number = 0;
+
     constructor(cells: Coordinates[]) {
         this.cells = cells;
         this.size = cells.length;
         this.name = SHIP_NAMES[this.size] ?? `${this.size}-палубный корабль`;
     }
-
-    public readonly name: string;
-    private readonly size: number;
-    readonly cells: Coordinates[];
-    private hits: number = 0;
 
     // потоплен ли корабль?
     get isSunk(): boolean {
