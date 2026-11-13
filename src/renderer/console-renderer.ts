@@ -1,16 +1,7 @@
+import {ALPHABET, COLORS} from '../consts';
 import {Board} from '../core/elements/board';
-import {CellState, Coordinates} from '../types';
-
-const ALPHABET = 'АБВГДЕЖЗИКЛМНОПРСТУ'; // 19 букв для полей от 6x6 до 19x19
-
-const COLORS = {
-    reset: '\x1b[0m',
-    blue: '\x1b[34m',
-    green: '\x1b[32m',
-    red: '\x1b[31m',
-    gray: '\x1b[90m',
-    yellow: '\x1b[33m',
-} as const;
+import {Coordinates} from '../types';
+import {formatRow} from './utils';
 
 export class ConsoleRenderer {
     private readonly fieldSize: number;
@@ -60,37 +51,13 @@ export class ConsoleRenderer {
         for (let row = 0; row < this.fieldSize; row++) {
             const rowLabel = String(row + 1).padStart(2, ' ');
 
-            const playerRowCells = this.formatRow(playerBoard, row, false);
-            const enemyRowCells = this.formatRow(enemyBoard, row, true);
+            const playerRowCells = formatRow(this.fieldSize, playerBoard, row, false);
+            const enemyRowCells = formatRow(this.fieldSize, enemyBoard, row, true);
 
             console.log(`${rowLabel} ${playerRowCells}${gap}${rowLabel} ${enemyRowCells}`);
         }
 
         console.log('\nЛегенда: ■ — корабль, ✕ — попадание, • — промах');
         console.log(`\n${COLORS.yellow}Статус:${COLORS.reset} ${statusMessage}\n`);
-    }
-
-    private formatRow(board: Board, row: number, hideShips: boolean): string {
-        const cells: string[] = [];
-
-        for (let col = 0; col < this.fieldSize; col++) {
-            const state = board.getCell({row, col});
-            cells.push(this.formatCell(state, hideShips));
-        }
-
-        return cells.join(' ');
-    }
-
-    private formatCell(state: CellState, hideShips: boolean): string {
-        switch (state) {
-            case 'empty':
-                return `${COLORS.blue}·${COLORS.reset}`;
-            case 'ship':
-                return hideShips ? `${COLORS.blue}·${COLORS.reset}` : `${COLORS.green}■${COLORS.reset}`;
-            case 'hit':
-                return `${COLORS.red}✕${COLORS.reset}`;
-            case 'miss':
-                return `${COLORS.gray}•${COLORS.reset}`;
-        }
     }
 }

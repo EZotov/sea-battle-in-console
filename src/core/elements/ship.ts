@@ -1,4 +1,4 @@
-import {SHIP_NAMES} from '../../consts';
+import {SHIP_NAMES} from '../../consts/index.ts';
 import type {Coordinates} from '../../types';
 
 export class Ship {

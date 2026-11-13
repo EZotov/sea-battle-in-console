@@ -15,30 +15,6 @@ export class Board {
         this.grid = this.createEmptyGrid();
     }
 
-    private createEmptyGrid(): CellState[][] {
-        return Array.from({length: this.size}, () => Array<CellState>(this.size).fill('empty'));
-    }
-
-    private canPlaceShip(ship: Ship): boolean {
-        for (const coords of ship.coords) {
-            if (!this.isInside(coords)) {
-                return false;
-            }
-
-            for (let dr = -1; dr <= 1; dr++) {
-                for (let dc = -1; dc <= 1; dc++) {
-                    const neighbor = {row: coords.row + dr, col: coords.col + dc};
-
-                    if (this.isInside(neighbor) && this.getCell(neighbor) !== 'empty') {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
     get fieldSize(): number {
         return this.size;
     }
@@ -98,5 +74,29 @@ export class Board {
                 }
             }
         }
+    }
+
+    private createEmptyGrid(): CellState[][] {
+        return Array.from({length: this.size}, () => Array<CellState>(this.size).fill('empty'));
+    }
+
+    private canPlaceShip(ship: Ship): boolean {
+        for (const coords of ship.coords) {
+            if (!this.isInside(coords)) {
+                return false;
+            }
+
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    const neighbor = {row: coords.row + dr, col: coords.col + dc};
+
+                    if (this.isInside(neighbor) && this.getCell(neighbor) !== 'empty') {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 }

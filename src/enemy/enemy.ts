@@ -1,5 +1,6 @@
 import {Board} from '../core/elements/board';
 import {Coordinates, ShotResult} from '../types';
+import {isValidTarget} from './utils';
 
 export class Enemy {
     private targetQueue: Coordinates[] = [];
@@ -10,20 +11,21 @@ export class Enemy {
         while (this.targetQueue.length > 0) {
             const next = this.targetQueue.shift();
 
-            if (next && this.isValidTarget(playerBoard, next)) {
+            if (next && isValidTarget(playerBoard, next)) {
                 return next;
             }
         }
 
         const smartPool: Coordinates[] = [];
         const fallbackPool: Coordinates[] = [];
+
         const size = playerBoard.fieldSize;
 
         for (let row = 0; row < size; row++) {
             for (let col = 0; col < size; col++) {
                 const coords = {row, col};
 
-                if (this.isValidTarget(playerBoard, coords)) {
+                if (isValidTarget(playerBoard, coords)) {
                     fallbackPool.push(coords);
 
                     if ((row + col) % 2 === 0) {
@@ -62,54 +64,56 @@ export class Enemy {
     }
 
     private updateTargetQueue(targetBoard: Board): void {
+        // Первое попадание
         const firstHit = this.currentHits[0];
+
         if (!firstHit) {
             return;
         }
 
         if (this.currentHits.length === 1) {
             const {row, col} = firstHit;
+
             const neighbors: Coordinates[] = [
                 {row: row - 1, col},
                 {row: row + 1, col},
                 {row, col: col - 1},
                 {row, col: col + 1},
             ];
-            this.targetQueue = neighbors.filter((c) => this.isValidTarget(targetBoard, c));
+
+            this.targetQueue = neighbors.filter((coordsItem) => isValidTarget(targetBoard, coordsItem));
             return;
         }
 
+        // Второе попадание. Понимаем ориентацию корабля
         const secondHit = this.currentHits[1];
+
         if (!secondHit) {
             return;
         }
+
+        let targetCandidates;
 
         const isHorizontal = firstHit.row === secondHit.row;
 
         if (isHorizontal) {
             const row = firstHit.row;
-            const cols = this.currentHits.map((c) => c.col);
-            this.targetQueue = [
+            const cols = this.currentHits.map((coords) => coords.col);
+
+            targetCandidates = [
                 {row, col: Math.min(...cols) - 1},
                 {row, col: Math.max(...cols) + 1},
-            ].filter((c) => this.isValidTarget(targetBoard, c));
+            ];
         } else {
             const col = firstHit.col;
-            const rows = this.currentHits.map((c) => c.row);
-            this.targetQueue = [
+            const rows = this.currentHits.map((coords) => coords.row);
+
+            targetCandidates = [
                 {row: Math.min(...rows) - 1, col},
                 {row: Math.max(...rows) + 1, col},
-            ].filter((c) => this.isValidTarget(targetBoard, c));
-        }
-    }
-
-    private isValidTarget(targetBoard: Board, coords: Coordinates): boolean {
-        if (!targetBoard.isInside(coords)) {
-            return false;
+            ];
         }
 
-        const cell = targetBoard.getCell(coords);
-
-        return cell !== 'hit' && cell !== 'miss';
+        this.targetQueue = targetCandidates.filter((coordsItem) => isValidTarget(targetBoard, coordsItem));
     }
 }
