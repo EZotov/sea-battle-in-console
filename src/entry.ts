@@ -18,7 +18,7 @@ import {GameEngine} from './core/game';
             return;
         }
 
-        const engine = new GameEngine({fieldSize: sizeFieldInt, fleetConfig: []});
+        const engine = new GameEngine({fieldSize: sizeFieldInt});
 
         let isRunning = true;
 

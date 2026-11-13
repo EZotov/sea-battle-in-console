@@ -3,7 +3,6 @@ import {Ship} from './ship';
 
 export interface BoardConfig {
     fieldSize: number;
-    fleetConfig: number[];
 }
 
 export class Board {
@@ -11,13 +10,33 @@ export class Board {
     private grid: CellState[][];
     private ships: Ship[] = [];
 
-    constructor(size: number) {
-        this.size = size;
+    constructor({fieldSize}: BoardConfig) {
+        this.size = fieldSize;
         this.grid = this.createEmptyGrid();
     }
 
     private createEmptyGrid(): CellState[][] {
         return Array.from({length: this.size}, () => Array<CellState>(this.size).fill('empty'));
+    }
+
+    private canPlaceShip(ship: Ship): boolean {
+        for (const coords of ship.coords) {
+            if (!this.isInside(coords)) {
+                return false;
+            }
+
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    const neighbor = {row: coords.row + dr, col: coords.col + dc};
+
+                    if (this.isInside(neighbor) && this.getCell(neighbor) !== 'empty') {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     get fieldSize(): number {
@@ -45,16 +64,22 @@ export class Board {
         return this.grid[row][col];
     }
 
-    setCell({row, col}: Coordinates, state: CellState): void {
+    setCell({row, col}: Coordinates, state: CellState) {
         this.grid[row][col] = state;
     }
 
-    addShip(ship: Ship): void {
+    addShip(ship: Ship): boolean {
+        if (!this.canPlaceShip(ship)) {
+            return false;
+        }
+
         this.ships.push(ship);
 
         for (const coords of ship.coords) {
             this.setCell(coords, 'ship');
         }
+
+        return true;
     }
 
     findShipAt(coords: Coordinates): Ship | null {
