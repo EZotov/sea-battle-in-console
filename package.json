@@ -1,13 +1,12 @@
 {
   "name": "sea-battle-in-console",
-  "type": "module",
   "version": "0.1.0",
   "description": "Game",
   "author": "Evgeniy Zotov",
   "scripts": {
-    "dev": "tsx src/entry.ts",
+    "dev": "tsx src/main.ts",
     "build": "rimraf dist && tsc",
-    "start:prod": "node dist/index.js"
+    "start:prod": "node dist/main.js"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.2.0",
