@@ -52,12 +52,26 @@ export class Board {
     addShip(ship: Ship): void {
         this.ships.push(ship);
 
-        for (const coords of ship.cells) {
+        for (const coords of ship.coords) {
             this.setCell(coords, 'ship');
         }
     }
 
     findShipAt(coords: Coordinates): Ship | null {
         return this.ships.find((ship) => ship.occupies(coords)) ?? null;
+    }
+
+    markBufferAroundShip(ship: Ship): void {
+        for (const {row, col} of ship.coords) {
+            for (let dr = -1; dr <= 1; dr++) {
+                for (let dc = -1; dc <= 1; dc++) {
+                    const neighbor = {row: row + dr, col: col + dc};
+
+                    if (this.isInside(neighbor) && this.getCell(neighbor) === 'empty') {
+                        this.setCell(neighbor, 'miss');
+                    }
+                }
+            }
+        }
     }
 }

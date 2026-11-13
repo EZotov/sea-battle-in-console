@@ -3,7 +3,7 @@ import readline from 'node:readline/promises';
 
 import {GameEngine} from './core/game';
 
-async function main(): Promise<void> {
+(async function main(): Promise<void> {
     const rl = readline.createInterface({input, output});
 
     console.clear();
@@ -18,11 +18,16 @@ async function main(): Promise<void> {
             return;
         }
 
-        const engine = new GameEngine({fieldSize: sizeFieldInt, a: '', fleetConfig: []});
+        const engine = new GameEngine({fieldSize: sizeFieldInt, fleetConfig: []});
+
         let isRunning = true;
 
         while (isRunning) {
             engine.renderField();
+
+            if (engine.isGameOver) {
+                break;
+            }
 
             const command = await rl.question('Введите координаты (или "exit" для выхода): ');
 
@@ -31,7 +36,7 @@ async function main(): Promise<void> {
                 continue;
             }
 
-            engine.handleTurn(command);
+            engine.playerTurn(command);
         }
     } catch {
         console.log('\nВыход из игры...');
@@ -39,6 +44,4 @@ async function main(): Promise<void> {
         console.log('Игра завершена.');
         rl.close();
     }
-}
-
-main();
+})();

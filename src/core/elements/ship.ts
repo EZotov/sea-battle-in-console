@@ -4,12 +4,12 @@ import type {Coordinates} from '../../types';
 export class Ship {
     public readonly name: string;
     private readonly size: number;
-    readonly cells: Coordinates[];
+    readonly coords: Coordinates[];
     private hits: number = 0;
 
-    constructor(cells: Coordinates[]) {
-        this.cells = cells;
-        this.size = cells.length;
+    constructor(coords: Coordinates[]) {
+        this.coords = coords;
+        this.size = coords.length;
         this.name = SHIP_NAMES[this.size] ?? `${this.size}-палубный корабль`;
     }
 
@@ -26,7 +26,7 @@ export class Ship {
     }
 
     // занимает ли корабль эту клетку?
-    occupies(coords: Coordinates): boolean {
-        return this.cells.some((cell) => cell.row === coords.row && cell.col === coords.col);
+    occupies(targetCoords: Coordinates): boolean {
+        return this.coords.some((coords) => coords.row === targetCoords.row && coords.col === targetCoords.col);
     }
 }
