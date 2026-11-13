@@ -36,7 +36,7 @@ export class GameEngine {
         this.consoleRenderer.render(this.playerBoard, this.enemyBoard, this.statusMessage);
     }
 
-    playerTurn(command: string) {
+    async playerTurn(command: string) {
         if (this.isGameOver) {
             return;
         }
@@ -69,20 +69,27 @@ export class GameEngine {
             return;
         }
 
-        this.enemyTurn();
+        await this.enemyTurn();
     }
 
     private async enemyTurn() {
         let enemyTurn = true;
 
-        const turnLogs: string[] = ['Вы промахнулись.'];
+        const turnLogs: string[] = [];
 
         while (enemyTurn && !this.isGameOver) {
             const nextTargetCoords = this.enemy.getNextShot(this.playerBoard);
-            this.statusMessage = 'Противник думает...';
+
+            const thinkingText = !turnLogs.length ? 'Вы промахнулись. Противник думает...' : 'Противник думает...';
+
+            turnLogs.push(thinkingText);
+            this.statusMessage = turnLogs.join(' ');
+
             this.renderField();
 
             await setTimeout(1000);
+
+            turnLogs.pop();
 
             const shotResult = this.processShot(this.playerBoard, nextTargetCoords);
 

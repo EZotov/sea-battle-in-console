@@ -36,7 +36,7 @@ import {GameEngine} from './core/game';
                 continue;
             }
 
-            engine.playerTurn(command);
+            await engine.playerTurn(command);
         }
     } catch {
         console.log('\nВыход из игры...');
