@@ -4,7 +4,7 @@
   "description": "Game",
   "author": "Evgeniy Zotov",
   "scripts": {
-    "dev": "tsx src/main.ts",
+    "dev": "tsx watch src/main.ts",
     "build": "rimraf dist && tsc",
     "start:prod": "node dist/main.js"
   },
